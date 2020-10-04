@@ -1,3 +1,4 @@
+import os
 
 
 # INPUT
@@ -19,11 +20,17 @@ def display_two_boards(board1, board2):
 
 
 def display_logo():
-    pass
 
 
 def display_menu():
-    pass
+    os.system("cls || clear")
+    print()
+    print(display_logo(), "\n")
+    print("Game mode: ", "\n")
+    print("MENU:\n"
+          "1 - Start Game\n"
+          "2 - Game Modes\n"
+          "3 - Exit")
 
 
 def display_mode_menu():
@@ -40,7 +47,6 @@ def mark_move(board, sign='X'):
 
 
 def main_menu():
-    pass
 
 
 def mode_menu():
