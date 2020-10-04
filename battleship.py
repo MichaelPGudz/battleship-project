@@ -18,6 +18,10 @@ def display_two_boards(board1, board2):
     pass
 
 
+def display_logo():
+    pass
+
+
 def display_menu():
     pass
 
