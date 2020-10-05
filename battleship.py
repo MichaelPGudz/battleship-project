@@ -48,15 +48,20 @@ def display_mode_menu():
 def init_board(size=5):
     board= []
     row = []
-    while len(board)<= size:
+    while len(board)<size:
         board.append(row) 
-    while len(row)<=size:
+    while len(row)<size:
         row.append("0")
     return board
 
 
-def mark_move(board, sign='X'):
-    pass
+def mark_move(row, col, board, enemy_board):
+    if enemy_board[row][col] == "0":
+        board[row][col]= "V"
+    elif enemy_board[row][col] == "S":
+        board[row][col]= "X"
+        
+    return board
 
 
 def main_menu():
