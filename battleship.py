@@ -1,5 +1,6 @@
 import os, string
 from bs_cursor import Cursor
+from enums import Players, Modes
 
 
 # INPUT
@@ -165,7 +166,13 @@ def mode_menu(mode):
 
 
 def game(mode):
-    pass
+    current_player = Players.Player1
+
+    current_player = Players.Player2
+
+    mode = Modes.HUMAN_HUMAN
+    if mode == Modes.HUMAN_HUMAN:
+        pass
 
 
 if __name__ == "__main__":
