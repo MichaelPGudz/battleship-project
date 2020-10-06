@@ -10,7 +10,7 @@ palece_ship_text = "pleace select place for you ship "
 def get_coordinates(text):
     x = True
     while x:
-        move_input = input().upper(text)
+        move_input = input().upper()
         list_of_letter = list(map(chr, list(range(65, 70))))
         list_of_number = list(map(str, list(range(1, 6))))
         if move_input[0] not in list_of_letter:
@@ -18,7 +18,7 @@ def get_coordinates(text):
         elif move_input[1] not in list_of_number:
             print("provide correct coordinates")     
         else:
-            row_translator = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4}
+            row_translator = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9}
             row = row_translator[move_input[0]]
             col = move_input[1]-1
             x = False
@@ -28,7 +28,7 @@ def get_coordinates(text):
 
 def place_ship(board):
     x = True
-    while x : 
+    while x:
         x, y = get_coordinates(palece_ship_text)
 
         if board[x][y] == "0":
