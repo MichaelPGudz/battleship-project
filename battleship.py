@@ -87,10 +87,10 @@ def init_board(size=5):
 def mark_move(row, col, board, enemy_board):
     if enemy_board[row][col] == "0":
         board[row][col]= Fore.BLACK + "V" + Style.RESET_ALL
-        enymy_board[row][col]= Fore.BLACK + "V" + Style.RESET_ALL       
+        enemy_board[row][col]= Fore.BLACK + "V" + Style.RESET_ALL       
     elif enemy_board[row][col] == "S":
         board[row][col]= Fore.RED + "X" + Style.RESET_ALL 
-        enymy_board[row][col]= Fore.BLACK + "X" + Style.RESET_ALL    
+        enemy_board[row][col]= Fore.BLACK + "X" + Style.RESET_ALL    
     return board
 
 
