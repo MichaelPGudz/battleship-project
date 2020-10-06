@@ -132,15 +132,16 @@ def mark_move(board, sign='X'):
     pass
 
 
-def main_menu():
+def main_menu(mode):
+    display_menu()
+    display_ship()
     user_input = input("Your pick: ")
     choices = ['1', '2', '3']
     while user_input not in choices:
         user_input = input('Incorrect value. Your pick: ')
 
     if user_input == '1':
-        # TODO change mode on enum
-        game('mode')
+        game(mode)
     elif user_input == '2':
         display_mode_menu()
         mode_menu()
@@ -151,15 +152,15 @@ def main_menu():
 
 
 def mode_menu(mode):
+    display_mode_menu()
     user_input = input("Your pick: ").lower()
     choices = ['1', '2', 'back']
     while user_input not in choices:
         user_input = input('Incorrect value. Your pick: ').lower()
-    # TODO change mode on enum
     if user_input == '1':
-        mode = 'HUMAN_HUMAN'
+        mode = Modes.HUMAN_HUMAN
     elif user_input == '2':
-        mode = 'HUMAN_AI'
+        mode = Modes.HUMAN_AI
     elif user_input == 'back':
         display_menu()
         main_menu()
@@ -170,10 +171,7 @@ def game(mode):
 
     current_player = Players.Player2
 
-    mode = Modes.HUMAN_HUMAN
-    if mode == Modes.HUMAN_HUMAN:
-        pass
-
 
 if __name__ == "__main__":
-    main_menu()
+    current_mode = Modes.HUMAN_HUMAN
+    main_menu(current_mode)
