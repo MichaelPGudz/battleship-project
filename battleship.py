@@ -1,4 +1,5 @@
 from colorama import Fore, Back, Style
+
 get_move_text = "please select place to fire in indicated order \"row\" \"col\":  "
 palece_ship_text= "pleace select place for you ship "
 
@@ -6,7 +7,7 @@ palece_ship_text= "pleace select place for you ship "
 def get_coordinates(text):
     x = True
     while x:
-        move_input = input().upper(text)
+        move_input = input(text).upper()
         list_of_letter = list(map(chr,list(range(65,70))))
         list_of_number = list(map(str,list(range(1,6))))
         if move_input[0] not in list_of_letter:
