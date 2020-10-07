@@ -139,11 +139,15 @@ def display_logo():
     print(r'\_______/ \__|  \__|  \__|      \__|   \________|\________| \______/ \__|  \__|\______|\__|      ')
 
 
-def display_menu():
+def display_menu(mode):
     os.system("cls || clear")
     print()
-    print(display_logo(), "\n")
-    print("Game mode: ", "\n")
+    display_logo()
+    print()
+    display_ship()
+    print()
+    mode = str(mode).split('.')[1]
+    print("Game mode: ", mode, "\n")
     print("MENU:\n"
           "1 - Start Game\n"
           "2 - Game Modes\n"
@@ -157,6 +161,11 @@ def display_mode_menu():
           "1 - HUMAN-HUMAN\n"
           "2 - HUMAN-AI\n"
           "back - go to menu\n")
+
+
+def display_select_ship_menu(current_player):
+    print(current_player)
+
 
 
 # LOGIC
@@ -184,8 +193,7 @@ def mark_move(row, col, board, enemy_board):
 
 
 def main_menu(mode):
-    display_menu()
-    display_ship()
+    display_menu(mode)
     user_input = input("Your pick: ")
     choices = ['1', '2', '3']
     while user_input not in choices:
@@ -219,7 +227,6 @@ def mode_menu(mode):
 
 def game(mode):
     current_player = Players.Player1
-    current_player = Players.Player2
 
 
 if __name__ == "__main__":
