@@ -1,2 +1,2 @@
-
-print(list(map(lambda x: x + 1, list(range(5)))))
+import string
+print('A' in string.ascii_uppercase[:5])

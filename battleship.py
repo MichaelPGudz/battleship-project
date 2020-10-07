@@ -29,17 +29,14 @@ def get_move(board):
     return user_input
 
 
-def place_ship(board):
-    x = True
-    while x : 
-        x, y = get_coordinates(palece_ship_text)
+def place_ship(board, user_input):
 
-        if board[x][y] == "0":
-            board[x][y] = "S"
-            print(f"place {x},{y} has been taken")
-            x= False
-        else:
-            print("provide empty coordinates")
+    row, col = get_coordinates(user_input)
+
+    if board[row][col] == "0":
+        board[row][col] = "S"
+        print(f"Place {row},{col} has been taken!")
+
     return board
 
 
