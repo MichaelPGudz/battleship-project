@@ -1,7 +1,7 @@
 from colorama import Fore, Back, Style
 
-get_move_text = "please select place to fire in indicated order \"row\" \"col\":  "
-palece_ship_text= "pleace select place for you ship "
+get_move_text = "please select place to fire in indicated order \"row\" \"col\" : "
+palece_ship_text= "please select place for you ship : "
 
 # INPUT
 def get_coordinates(text,size=5):
@@ -24,7 +24,7 @@ def get_coordinates(text,size=5):
 
 def translate_row(row,list_of_letter,list_of_number):
     list_len = len(list_of_number)
-    list_of_number.insert(0,0)
+    list_of_number.insert(0,"0")
     list_of_number.remove(str(list_len))
 
     row_translator = {}
