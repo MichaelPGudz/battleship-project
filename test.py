@@ -1,2 +1,4 @@
-import string
-print('A' in string.ascii_uppercase[:5])
+import string, battleship
+board1 = [['O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O']]
+battleship.display_two_boards(board1, board1)
+

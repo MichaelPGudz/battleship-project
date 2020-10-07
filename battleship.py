@@ -8,7 +8,7 @@ palece_ship_text = "pleace select place for you ship "
 
 
 # INPUT
-def get_coordinates(user_input):
+def convert_input_to_coordinates(user_input):
     row = user_input[0]
     col = user_input[1]
 
@@ -29,14 +29,11 @@ def get_move(board):
     return user_input
 
 
-def place_ship(board, user_input):
-
-    row, col = get_coordinates(user_input)
-
-    if board[row][col] == "0":
-        board[row][col] = "S"
-        print(f"Place {row},{col} has been taken!")
-
+def place_ship(board, row, col, ship_size=1):
+    if ship_size == 1:
+        if board[row][col] == "0":
+            board[row][col] = "S"
+            print(f"Place {row},{col} has been taken!")
     return board
 
 
@@ -50,68 +47,54 @@ def get_ai_move():
 
 # OUTPUT
 def display_board(board):
-    column_headers = []
-    row_headers = []
-    index = 0
     board_size = len(board)
-    while index < board_size:
-        column_headers.append(string.ascii_uppercase[index])
-        row_headers.append(str(index + 1))
-        index += 1
+    column_headers = map(lambda x: str(x + 1), list(range(board_size)))
+    row_headers = string.ascii_uppercase[:board_size]
 
-    print('  ' + ' '.join(column_headers))
+    header = '  ' + ' '.join(column_headers)
+    print(header)
     index = 0
     for row in board:
         row_string = row_headers[index]
-        for col in row:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(row)
         index += 1
         print(row_string)
 
 
 def display_two_boards(board1, board2, offset=4):
-    column_headers = []
-    row_headers = []
-    index = 0
     board_size = len(board1)
-    while index < board_size:
-        column_headers.append(string.ascii_uppercase[index])
-        row_headers.append(str(index + 1))
-        index += 1
+    column_headers = map(lambda x: str(x + 1), list(range(board_size)))
+    row_headers = string.ascii_uppercase[:board_size]
+
     header = ('  ' + ' '.join(column_headers) + " " * offset) * 2
     print(header)
+
     # Build rows
     index = 0
-    while index < len(board1):
+    while index < board_size:
         row_string = row_headers[index]
-        for col in board1[index]:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(board1[index])
+
         row_string += ' ' * offset + row_headers[index]
-        for col in board2[index]:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(board2[index])
+
         index += 1
-        # Print row
         print(row_string)
 
 
 def display_board_with_position(board, pos_x=0, pos_y=1):
     """WARNING! Work only in console. In PyCharm i had error."""
     cursor = Cursor()
-    column_headers = []
-    row_headers = []
-    index = 0
     board_size = len(board)
-    while index < board_size:
-        column_headers.append(string.ascii_uppercase[index])
-        row_headers.append(str(index + 1))
-        index += 1
+    column_headers = map(lambda x: str(x + 1), list(range(board_size)))
+    row_headers = string.ascii_uppercase[:board_size]
 
-    cursor.print_in_position(pos_x, pos_y, '  ' + ' '.join(column_headers))
+    header = '  ' + ' '.join(column_headers)
+    cursor.print_in_position(pos_x, pos_y, header)
     index = 0
     for row in board:
         row_string = row_headers[index]
-        for col in row:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(row)
         index += 1
         cursor.print_in_position(pos_x, pos_y + index, row_string)
 
@@ -167,7 +150,6 @@ def display_select_ship_menu(current_player):
     print(current_player)
 
 
-
 # LOGIC
 def init_board(size=5):
     board = []
@@ -179,9 +161,7 @@ def init_board(size=5):
     return board
 
 
-# bedzie problem z kolorem, wyprintowanie jednego zakolorowanego pola koloruje wszystko co jest później
 # wrazie problemów https://pypi.org/project/colorama/  i zmiana wywoływania koloru.
-# problem powienien byc zażegnany --> Style.RESET_ALL
 def mark_move(row, col, board, enemy_board):
     if enemy_board[row][col] == "0":
         board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
