@@ -4,28 +4,43 @@ get_move_text = "please select place to fire in indicated order \"row\" \"col\":
 palece_ship_text= "pleace select place for you ship "
 
 # INPUT
-def get_coordinates(text):
+def get_coordinates(text,size=5):
     x = True
     while x:
         move_input = input(text).upper()
-        list_of_letter = list(map(chr,list(range(65,70))))
-        list_of_number = list(map(str,list(range(1,6))))
+        list_of_letter = list(map(chr,list(range(65,65+size))))
+        list_of_number = list(map(str,list(range(1,1+size))))
         if move_input[0] not in list_of_letter:
             print("provide correct coordinates")   
         elif move_input[1] not in list_of_number:
             print("provide correct coordinates")     
         else:
-            row_translator = {"A": 0 , "B" : 1 , "C":2, "D": 3, "E" :4 }
-            row = row_translator[move_input[0]]
+            row =  translate_row(move_input[0],list_of_letter,list_of_number,)
             col = int(move_input[1])-1
             x= False
 
     return row, col
 
 
+def translate_row(row,list_of_letter,list_of_number):
+    list_len = len(list_of_number)
+    list_of_number.insert(0,0)
+    list_of_number.remove(str(list_len))
+
+    row_translator = {}
+    for key in list_of_letter: 
+        for value in list_of_number: 
+            row_translator[key] = value 
+            list_of_number.remove(value) 
+            break
+    
+    coordinate_x = row_translator[row]
+
+    return int(coordinate_x)
+
+
 def place_ship(board,ship_len=1):
     
-    is_next_bool= True
     i=0
     while ship_len>i:
         x = True
