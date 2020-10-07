@@ -15,7 +15,7 @@ def get_coordinates(text,size=5):
         elif move_input[1] not in list_of_number:
             print("provide correct coordinates")     
         else:
-            row =  translate_row(move_input[0],list_of_letter,list_of_number,)
+            row =  translate_row(move_input[0],list_of_letter,list_of_number)
             col = int(move_input[1])-1
             x= False
 
