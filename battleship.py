@@ -1,47 +1,83 @@
-import os, string
+import os
+import string
 from bs_cursor import Cursor
 from enums import Players, Modes
 from colorama import Fore, Back, Style
 
-get_move_text = "please select place to fire in indicated order \"row\" \"col\":  "
-palece_ship_text = "pleace select place for you ship "
+get_move_text = "please select place to fire in indicated order \"row\" \"col\" : "
+place_ship_text = "please select place for you ship : "
+
 
 # INPUT
-def get_coordinates(text):
+def get_coordinates(text, size=5):
     x = True
     while x:
-        move_input = input().upper()
-        list_of_letter = list(map(chr, list(range(65, 70))))
-        list_of_number = list(map(str, list(range(1, 6))))
+        move_input = input(text).upper()
+        list_of_letter = list(map(chr, list(range(65, (size + 65)))))
+        list_of_number = list(map(str, list(range(1, (size + 1)))))
         if move_input[0] not in list_of_letter:
             print("provide correct coordinates")   
         elif move_input[1] not in list_of_number:
             print("provide correct coordinates")     
         else:
-            row_translator = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9}
-            row = row_translator[move_input[0]]
-            col = move_input[1]-1
+            row = translate_row(move_input[0], list_of_letter, list_of_number)
+            col = int(move_input[1])-1
             x = False
-
     return row, col
 
 
-def place_ship(board):
-    x = True
-    while x:
-        x, y = get_coordinates(palece_ship_text)
+def translate_row(row, list_of_letter, list_of_number):
+    list_len = len(list_of_number)
+    list_of_number.insert(0, "0")
+    list_of_number.remove(str(list_len))
+    row_translator = {}
+    for key in list_of_letter: 
+        for value in list_of_number: 
+            row_translator[key] = value 
+            list_of_number.remove(value) 
+            break
 
-        if board[x][y] == "0":
-            board[x][y] = "S"
-            print(f"place {x},{y} has been taken")
-            x= False
-        else:
-            print("provide empty coordinates")
+    coordinate_x = row_translator[row]
+    return int(coordinate_x)
+
+
+def place_ship(board, ship_len=1):
+    i = 0
+    while ship_len > i:
+        x = True
+        i += 1
+        while x:
+            x, y = get_coordinates(place_ship_text)
+            is_next_bool = is_next(board, x, y, i, ship_len)
+            
+            if is_next_bool:
+                if board[x][y] == "0":
+                    board[x][y] = "S"
+                    print(f"place {x},{y} has been taken")
+                    x = False
+                else:
+                    print("provide empty coordinates")
+            # else:
+            #     # x= False
+            #     # i-=1
     return board
 
 
-def is_next(board):
-    pass
+def is_next(board, x, y, i, ship_len=1):
+    z = ship_len-1
+    if i == 1:
+        return True     
+    elif board[x-z][y] == "S":
+        return True
+    elif board[x+z][y] == "S":
+        return True
+    elif board[x][y-z] == "S":
+        return True
+    elif board[x][y+z] == "S":
+        return True
+    else:
+        print("position the ship in a straight line")
+        return False
 
 
 def get_ai_move():
@@ -163,10 +199,11 @@ def display_mode_menu():
 def init_board(size=5):
     board = []
     row = []
-    while len(board) < size:
-        board.append(row)
     while len(row) < size:
         row.append("0")
+    while len(board) < size:
+        copy_row = row.copy()
+        board.append(copy_row) 
     return board
 
 
