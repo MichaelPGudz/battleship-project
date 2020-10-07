@@ -6,24 +6,27 @@ from colorama import Fore, Back, Style
 get_move_text = "please select place to fire in indicated order \"row\" \"col\":  "
 palece_ship_text = "pleace select place for you ship "
 
+
 # INPUT
-def get_coordinates(text):
-    x = True
-    while x:
-        move_input = input().upper(text)
-        list_of_letter = list(map(chr, list(range(65, 70))))
-        list_of_number = list(map(str, list(range(1, 6))))
-        if move_input[0] not in list_of_letter:
-            print("provide correct coordinates")   
-        elif move_input[1] not in list_of_number:
-            print("provide correct coordinates")     
-        else:
-            row_translator = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4}
-            row = row_translator[move_input[0]]
-            col = move_input[1]-1
-            x = False
+def get_coordinates(user_input):
+    row = user_input[0]
+    col = user_input[1]
+
+    row = string.ascii_uppercase.index(row)
+    col -= 1
 
     return row, col
+
+
+def get_move(board):
+    board_size = len(board)
+    row_headers = list(map(lambda x: x + 1, list(range(board_size))))
+    col_headers = string.ascii_uppercase[:board_size]
+
+    user_input = input("Provide coordinates (e.g. A1): ").upper()
+    while user_input[0] not in col_headers or user_input[1] not in row_headers:
+        user_input = input("Provide coordinates (e.g. A1): ").upper()
+    return user_input
 
 
 def place_ship(board):
