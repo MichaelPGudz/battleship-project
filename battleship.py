@@ -17,30 +17,56 @@ def get_coordinates(text):
         else:
             row_translator = {"A": 0 , "B" : 1 , "C":2, "D": 3, "E" :4 }
             row = row_translator[move_input[0]]
-            col = move_input[1]-1
+            col = int(move_input[1])-1
             x= False
 
     return row, col
 
 
-def place_ship(board):
-    x = True
-    while x : 
-        x,y = get_coordinates(palece_ship_text)
-
-        if board[x][y] == "0":
-            board[x][y] = "S"
-            print(f"place {x},{y} has been taken")
-            x= False
-        else:
-            print("provide empty coordinates")
+def place_ship(board,ship_len=1):
+    
+    is_next_bool= True
+    i=0
+    while ship_len>i:
+        x = True
+        i+=1
+        while x : 
+            x,y = get_coordinates(palece_ship_text)
+            is_next_bool = is_next(board,x,y,i,ship_len)
+            
+            if is_next_bool == True:
+                
+                if board[x][y] == "0":
+                    board[x][y] = "S"
+                    print(f"place {x},{y} has been taken")
+                    x= False
+                else:
+                    print("provide empty coordinates")
+            # else:
+            #     # x= False
+            #     # i-=1
     return board
 
 
-def is_next(board):
-     
+def is_next(board,x,y,i,ship_len=1):
+    z = ship_len-1
+    if i == 1 :
+        return True     
+    elif board[x-z][y]=="S":
+        return True
+    elif board[x+z][y]=="S":
+        return True
+    elif board[x][y-z]=="S":
+        return True
+    elif board[x][y+z]=="S":
+        return True
+    else:
+        print("position the ship in a straight line")
+        return False
+               
+    
 
-    pass
+        
 
 
 
@@ -76,10 +102,11 @@ def display_mode_menu():
 def init_board(size=5):
     board= []
     row = []
-    while len(board)<size:
-        board.append(row) 
     while len(row)<size:
         row.append("0")
+    while len(board)<size:
+        copy_row = row.copy()
+        board.append(copy_row) 
     return board
 
 # bedzie problem z kolorem, wyprintowanie jednego zakolorowanego pola koloruje wszystko co jest później
