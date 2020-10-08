@@ -1,23 +1,20 @@
 from colorama import Fore, Back, Style
 
-get_move_text = "please select place to fire in indicated order \"row\" \"col\" : "
-palece_ship_text= "please select place for you ship : "
 
 # INPUT
 def get_coordinates(text,size=5):
-    x = True
-    while x:
-        move_input = input(text).upper()
+    
+    assignment_bool = True
+    while assignment_bool:
+        move_input = input("please select coordinates in indicated order \"row\" \"col\"").upper()
         list_of_letter = list(map(chr,list(range(65,65+size))))
         list_of_number = list(map(str,list(range(1,1+size))))
-        if move_input[0] not in list_of_letter:
-            print("provide correct coordinates")   
-        elif move_input[1] not in list_of_number:
-            print("provide correct coordinates")     
+        if move_input[0] not in list_of_letter or move_input[1] not in list_of_number:
+            print("provide correct coordinates")      
         else:
             row =  translate_row(move_input[0],list_of_letter,list_of_number)
             col = int(move_input[1])-1
-            x= False
+            assignment_bool = False
 
     return row, col
 
@@ -43,18 +40,18 @@ def place_ship(board,ship_len=1):
     
     i=0
     while ship_len>i:
-        x = True
+        assignment_bool = True
         i+=1
-        while x : 
+        while assignment_bool : 
             x,y = get_coordinates(palece_ship_text)
-            is_next_bool = is_next(board,x,y,i,ship_len)
+            is_next_bool = is_next(board,x,y,ship_len)
             
-            if is_next_bool == True:
+            if is_next_bool:
                 
                 if board[x][y] == "0":
                     board[x][y] = "S"
                     print(f"place {x},{y} has been taken")
-                    x= False
+                    assignment_bool = False
                 else:
                     print("provide empty coordinates")
             # else:
@@ -63,21 +60,24 @@ def place_ship(board,ship_len=1):
     return board
 
 
-def is_next(board,x,y,i,ship_len=1):
-    z = ship_len-1
-    if i == 1 :
-        return True     
-    elif board[x-z][y]=="S":
-        return True
-    elif board[x+z][y]=="S":
-        return True
-    elif board[x][y-z]=="S":
-        return True
-    elif board[x][y+z]=="S":
-        return True
-    else:
-        print("position the ship in a straight line")
-        return False
+def is_next(board,x,y,ship_len=1):
+    len_ship_to_place = ship_len-1
+    couter = 0
+    while z > counter:
+        couter +=1
+        if couter == 1 :
+            return True     
+        elif board[x-len_ship_to_place][y]=="S":
+            return True
+        elif board[x+len_ship_to_place][y]=="S":
+            return True
+        elif board[x][y-len_ship_to_place]=="S":
+            return True
+        elif board[x][y+len_ship_to_place]=="S":
+            return True
+        else:
+            print("position the ship in a straight line")
+            return False
                
     
 
