@@ -255,6 +255,7 @@ def mode_menu(mode):
 
 
 def game(mode):
+    board = init_board()
     current_player = Players.Player1
     current_player = Players.Player2
 
