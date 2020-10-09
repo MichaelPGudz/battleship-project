@@ -9,57 +9,32 @@ place_ship_text = "please select place for you ship : "
 
 
 # INPUT
-def get_coordinates(text, size=5):
-    x = True
-    while x:
-        move_input = input(text).upper()
-        list_of_letter = list(map(chr, list(range(65, (size + 65)))))
-        list_of_number = list(map(str, list(range(1, (size + 1)))))
-        if move_input[0] not in list_of_letter:
-            print("provide correct coordinates")   
-        elif move_input[1] not in list_of_number:
-            print("provide correct coordinates")     
-        else:
-            row = translate_row(move_input[0], list_of_letter, list_of_number)
-            col = int(move_input[1])-1
-            x = False
+def convert_input_to_coordinates(user_input):
+    row = user_input[0]
+    col = user_input[1]
+
+    row = string.ascii_uppercase.index(row)
+    col -= 1
+
     return row, col
 
 
-def translate_row(row, list_of_letter, list_of_number):
-    list_len = len(list_of_number)
-    list_of_number.insert(0, "0")
-    list_of_number.remove(str(list_len))
-    row_translator = {}
-    for key in list_of_letter: 
-        for value in list_of_number: 
-            row_translator[key] = value 
-            list_of_number.remove(value) 
-            break
+def get_move(board):
+    board_size = len(board)
+    row_headers = list(map(lambda x: x + 1, list(range(board_size))))
+    col_headers = string.ascii_uppercase[:board_size]
 
-    coordinate_x = row_translator[row]
-    return int(coordinate_x)
+    user_input = input("Provide coordinates (e.g. A1): ").upper()
+    while user_input[0] not in col_headers or user_input[1] not in row_headers:
+        user_input = input("Provide coordinates (e.g. A1): ").upper()
+    return user_input
 
 
-def place_ship(board, ship_len=1):
-    i = 0
-    while ship_len > i:
-        x = True
-        i += 1
-        while x:
-            x, y = get_coordinates(place_ship_text)
-            is_next_bool = is_next(board, x, y, i, ship_len)
-            
-            if is_next_bool:
-                if board[x][y] == "0":
-                    board[x][y] = "S"
-                    print(f"place {x},{y} has been taken")
-                    x = False
-                else:
-                    print("provide empty coordinates")
-            # else:
-            #     # x= False
-            #     # i-=1
+def place_ship(board, row, col, ship_size=1):
+    if ship_size == 1:
+        if board[row][col] == "0":
+            board[row][col] = "S"
+            print(f"Place {row},{col} has been taken!")
     return board
 
 
@@ -86,68 +61,54 @@ def get_ai_move():
 
 # OUTPUT
 def display_board(board):
-    column_headers = []
-    row_headers = []
-    index = 0
     board_size = len(board)
-    while index < board_size:
-        column_headers.append(string.ascii_uppercase[index])
-        row_headers.append(str(index + 1))
-        index += 1
+    column_headers = map(lambda x: str(x + 1), list(range(board_size)))
+    row_headers = string.ascii_uppercase[:board_size]
 
-    print('  ' + ' '.join(column_headers))
+    header = '  ' + ' '.join(column_headers)
+    print(header)
     index = 0
     for row in board:
         row_string = row_headers[index]
-        for col in row:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(row)
         index += 1
         print(row_string)
 
 
 def display_two_boards(board1, board2, offset=4):
-    column_headers = []
-    row_headers = []
-    index = 0
     board_size = len(board1)
-    while index < board_size:
-        column_headers.append(string.ascii_uppercase[index])
-        row_headers.append(str(index + 1))
-        index += 1
+    column_headers = map(lambda x: str(x + 1), list(range(board_size)))
+    row_headers = string.ascii_uppercase[:board_size]
+
     header = ('  ' + ' '.join(column_headers) + " " * offset) * 2
     print(header)
+
     # Build rows
     index = 0
-    while index < len(board1):
+    while index < board_size:
         row_string = row_headers[index]
-        for col in board1[index]:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(board1[index])
+
         row_string += ' ' * offset + row_headers[index]
-        for col in board2[index]:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(board2[index])
+
         index += 1
-        # Print row
         print(row_string)
 
 
 def display_board_with_position(board, pos_x=0, pos_y=1):
     """WARNING! Work only in console. In PyCharm i had error."""
     cursor = Cursor()
-    column_headers = []
-    row_headers = []
-    index = 0
     board_size = len(board)
-    while index < board_size:
-        column_headers.append(string.ascii_uppercase[index])
-        row_headers.append(str(index + 1))
-        index += 1
+    column_headers = map(lambda x: str(x + 1), list(range(board_size)))
+    row_headers = string.ascii_uppercase[:board_size]
 
-    cursor.print_in_position(pos_x, pos_y, '  ' + ' '.join(column_headers))
+    header = '  ' + ' '.join(column_headers)
+    cursor.print_in_position(pos_x, pos_y, header)
     index = 0
     for row in board:
         row_string = row_headers[index]
-        for col in row:
-            row_string += ' ' + str(col)
+        row_string += ' ' + ' '.join(row)
         index += 1
         cursor.print_in_position(pos_x, pos_y + index, row_string)
 
@@ -175,11 +136,15 @@ def display_logo():
     print(r'\_______/ \__|  \__|  \__|      \__|   \________|\________| \______/ \__|  \__|\______|\__|      ')
 
 
-def display_menu():
+def display_menu(mode):
     os.system("cls || clear")
     print()
-    print(display_logo(), "\n")
-    print("Game mode: ", "\n")
+    display_logo()
+    print()
+    display_ship()
+    print()
+    mode = str(mode).split('.')[1]
+    print("Game mode: ", mode, "\n")
     print("MENU:\n"
           "1 - Start Game\n"
           "2 - Game Modes\n"
@@ -195,6 +160,10 @@ def display_mode_menu():
           "back - go to menu\n")
 
 
+def display_select_ship_menu(current_player):
+    print(current_player)
+
+
 # LOGIC
 def init_board(size=5):
     board = []
@@ -207,9 +176,7 @@ def init_board(size=5):
     return board
 
 
-# bedzie problem z kolorem, wyprintowanie jednego zakolorowanego pola koloruje wszystko co jest później
 # wrazie problemów https://pypi.org/project/colorama/  i zmiana wywoływania koloru.
-# problem powienien byc zażegnany --> Style.RESET_ALL
 def mark_move(row, col, board, enemy_board):
     if enemy_board[row][col] == "0":
         board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
@@ -221,8 +188,7 @@ def mark_move(row, col, board, enemy_board):
 
 
 def main_menu(mode):
-    display_menu()
-    display_ship()
+    display_menu(mode)
     user_input = input("Your pick: ")
     choices = ['1', '2', '3']
     while user_input not in choices:
@@ -257,7 +223,6 @@ def mode_menu(mode):
 def game(mode):
     board = init_board()
     current_player = Players.Player1
-    current_player = Players.Player2
 
 
 if __name__ == "__main__":
