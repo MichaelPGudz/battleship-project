@@ -8,11 +8,9 @@ from colorama import Fore, Style
 # INPUT
 def convert_input_to_coordinates(user_input):
     row = user_input[0]
-    col = user_input[1:]
-
+    col = int(user_input[1:])
     row = string.ascii_uppercase.index(row)
     col -= 1
-
     return row, col
 
 
@@ -39,9 +37,11 @@ def get_move(board):
 
 # INPUT
 def get_board_size():
-    board_size = input("Please enter number of columns in the board: ")
+    """Function in which player defines the size of the grid. It also checks input to be digit."""
+    board_size = input("Please enter number of columns in the board: \n")
     while not board_size.isdigit() or int(board_size) < 5 or int(board_size) > 10:
         board_size = input("Wrong value, please try again!")
+    # print()
     return int(board_size)
 
 
@@ -90,6 +90,8 @@ def place_ship(board, ship_len=1):
                     assignment_bool = False
                 else:
                     print("provide empty coordinates")
+        display_board(board)
+        print("\n")
             # else:
             #     # x= False
             #     # i-=1
@@ -300,28 +302,6 @@ def display_select_ship_menu(current_player):
 
 
 # LOGIC
-def init_board(size=5):
-    board = []
-    row = []
-    while len(row) < size:
-        row.append("0")
-    while len(board) < size:
-        copy_row = row.copy()
-        board.append(copy_row)
-    return board
-
-
-# wrazie problemów https://pypi.org/project/colorama/  i zmiana wywoływania koloru.
-def mark_move(row, col, board, enemy_board):
-    if enemy_board[row][col] == "0":
-        board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
-        enemy_board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
-    elif enemy_board[row][col] == "S":
-        board[row][col] = Fore.RED + "X" + Style.RESET_ALL
-        enemy_board[row][col] = Fore.BLACK + "X" + Style.RESET_ALL
-    return board
-
-
 def main_menu(mode):
     display_menu(mode)
     user_input = input("Your pick: ")
@@ -355,38 +335,88 @@ def mode_menu(mode):
         # main_menu()
 
 
+def init_board(size=5):
+    board = []
+    row = []
+    while len(row) < size:
+        row.append("0")
+    while len(board) < size:
+        copy_row = row.copy()
+        board.append(copy_row)
+    return board
+
+
 def player_input_ships(board, amount_of_ships=2):
     n = 1
     while n <= amount_of_ships:
         place_ship(board, n)
         os.system("cls || clear")
-        display_board(board)
         n += 1
+
+
+def enter_ships(board_size, player):
+    """Function initialize board object for the provided player and asks for the location of the ships on the grid"""
+    player_board = init_board(board_size)
+    print(f"Current player: {player}")
+    display_board(player_board)
+    player_amount_input = int(input("Provide number of ship: "))
+    player_input_ships(player_board, player_amount_input)
+    display_board(player_board)
+    print("\n")
+    return player_board
+
+
+# wrazie problemów https://pypi.org/project/colorama/  i zmiana wywoływania koloru.
+def mark_move(row, col, board, enemy_board):
+    if enemy_board[row][col] == "0":
+        board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
+        # enemy_board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
+    elif enemy_board[row][col] == "S":
+        board[row][col] = Fore.RED + "X" + Style.RESET_ALL
+        # enemy_board[row][col] = Fore.BLACK + "X" + Style.RESET_ALL
+    return board
 
 
 def game(mode):
     board_size = get_board_size()
-    board_player_1 = init_board(board_size)
-    board_player_2 = init_board(board_size)
-    current_player = Players.Player1
-    print(f"Current player: {current_player}")
-    display_board(board_player_1)
-    player_amount_input = int(input("Provide number of ship: "))
-    player_input_ships(board_player_1, player_amount_input)
-    display_board(board_player_1)
-    print("\n")
-    current_player = Players.Player2
-    print(f"Current player: {current_player}")
-    display_board(board_player_2)
-    player_amount_input = int(input("Provide number of ship: "))
-    player_input_ships(board_player_2, player_amount_input)
-    display_board(board_player_2)
+    board_player_1 = enter_ships(board_size, Players.Player1)
+    board_player_1_enemy = init_board(board_size)
+    board_player_2 = enter_ships(board_size, Players.Player2)
+    board_player_2_enemy = init_board(board_size)
+    has_won = False
+
+    while not has_won:
+        # Player 1 turn
+        print(f"{Players.Player1} turn", end="\n")
+        shot_attempt = get_coordinates()
+        mark_move(shot_attempt[0], shot_attempt[1], board_player_1_enemy, board_player_2)
+        display_board(board_player_1_enemy)
+        amount_of_hits_player_1 = sum(x.count("\x1b[31mX\x1b[0m") for x in board_player_1_enemy)
+        amount_of_ships_player_2 = sum(x.count("S") for x in board_player_2)
+        print(amount_of_hits_player_1, amount_of_ships_player_2)
+
+        # Player 2 Turn
+        print(f"{Players.Player2} turn", end="\n")
+        shot_attempt = get_coordinates()
+        mark_move(shot_attempt[0], shot_attempt[1], board_player_2_enemy, board_player_1)
+        display_board(board_player_2_enemy)
+        amount_of_hits_player_2 = sum(x.count("\x1b[31mX\x1b[0m") for x in board_player_2_enemy)
+        amount_of_ships_player_1 = sum(x.count("S") for x in board_player_1)
+        print(amount_of_hits_player_2, amount_of_ships_player_1)
+        check_empty_spaces_player_1 = sum(x.count("0") for x in board_player_2_enemy)
+        check_empty_spaces_player_2 = sum(x.count("0") for x in board_player_1_enemy)
+
+        if amount_of_hits_player_1 == amount_of_ships_player_2:
+            print("Player 1 has won!")
+            has_won = True
+        elif amount_of_hits_player_2 == amount_of_ships_player_1:
+            print("Player 2 has won!")
+            has_won = True
+        elif check_empty_spaces_player_1 == 0 or check_empty_spaces_player_2 == 0:
+            print("It's a tie")
+            has_won = True
 
 
-    #Player 1 turn
-    shot_attempt = get_coordinates()
-    mark_move(shot_attempt[0], shot_attempt[1], board_player_1, board_player_2)
-    display_two_boards(board_player_1, board_player_2)
 
 if __name__ == "__main__":
     current_mode = Modes.HUMAN_HUMAN
