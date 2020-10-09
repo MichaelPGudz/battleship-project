@@ -2,7 +2,7 @@ from colorama import Fore, Back, Style
 
 
 # INPUT
-def get_coordinates(text,size=5):
+def get_coordinates(size=5):
     
     assignment_bool = True
     while assignment_bool:
@@ -38,19 +38,20 @@ def translate_row(row,list_of_letter,list_of_number):
 
 def place_ship(board,ship_len=1):
     
-    i=0
-    while ship_len>i:
+   
+    while_loop_counter=0
+    while ship_len>while_loop_counter:
         assignment_bool = True
-        i+=1
+        while_loop_counter+=1
         while assignment_bool : 
-            x,y = get_coordinates(palece_ship_text)
-            is_next_bool = is_next(board,x,y,ship_len)
+            row,col = get_coordinates()
+            is_next_bool = is_next(board,row,col,while_loop_counter,ship_len)
             
             if is_next_bool:
                 
-                if board[x][y] == "0":
-                    board[x][y] = "S"
-                    print(f"place {x},{y} has been taken")
+                if board[row][col] == "0":
+                    board[row][col] = "S"
+                    print(f"place {row},{col} has been taken")
                     assignment_bool = False
                 else:
                     print("provide empty coordinates")
@@ -60,20 +61,93 @@ def place_ship(board,ship_len=1):
     return board
 
 
-def is_next(board,x,y,ship_len=1):
-    len_ship_to_place = ship_len-1
-    couter = 0
-    while z > counter:
-        couter +=1
-        if couter == 1 :
-            return True     
-        elif board[x-len_ship_to_place][y]=="S":
+def is_next(board,x,y,loop_counter,ship_len=1):
+    len_board =len(board)-1
+    len_ship_to_place = loop_counter -1
+    if loop_counter == 1 :
+        return True 
+    elif x == 0 and y==0:
+        if board[x+len_ship_to_place][y]=="S" and board[x+1][y]=="S":
             return True
-        elif board[x+len_ship_to_place][y]=="S":
+        elif board[x][y+len_ship_to_place]=="S" and board[x][y+1]=="S":
             return True
-        elif board[x][y-len_ship_to_place]=="S":
+        else:
+            print("position the ship in a straight line")
+            return False
+    elif x == len_board and y==0 :
+        if board[x-len_ship_to_place][y]=="S" and board[x-1][y]=="S":
             return True
-        elif board[x][y+len_ship_to_place]=="S":
+        elif board[x][y+len_ship_to_place]=="S" and board[x][y+1]=="S":
+            return True
+        else:
+            print("position the ship in a straight line")
+            return False        
+    elif x == 0 and y == len_board:
+        if board[x+len_ship_to_place][y]=="S" and board[x+1][y]=="S":
+            return True
+        elif board[x][y-len_ship_to_place]=="S" and board[x][y-1]=="S":
+            return True
+        else:
+            print("position the ship in a straight line")
+            return False
+    elif x == len_board and y == len_board:
+        if board[x-len_ship_to_place][y]=="S" and board[x-1][y]=="S":
+            return True
+        elif board[x][y-len_ship_to_place]=="S" and board[x][y-1]=="S":
+            return True
+        else:
+            print("position the ship in a straight line")
+            return False
+    elif x == 0 :
+        if board[x+len_ship_to_place][y]=="S" and board[x+1][y]=="S":
+            return True
+        elif board[x][y-len_ship_to_place]=="S" and board[x][y-1]=="S":
+            return True
+        elif board[x][y+len_ship_to_place]=="S" and board[x][y+1]=="S":
+            return True            
+        else:
+            print("position the ship in a straight line")
+            return False
+    elif y==0 :
+        if board[x-len_ship_to_place][y]=="S" and board[x-1][y]=="S":
+            return True
+        elif board[x+len_ship_to_place][y]=="S" and board[x+1][y]=="S":
+            return True
+        elif board[x][y+len_ship_to_place]=="S" and board[x][y+1]=="S":
+            return True
+        else:
+            print("position the ship in a straight line")
+            return False
+    elif x== len_board :
+        if board[x-len_ship_to_place][y]=="S" and board[x-1][y]=="S" :
+            return True
+        elif board[x][y-len_ship_to_place]=="S" and board[x][y-1]=="S":
+            return True
+        elif board[x][y+len_ship_to_place]=="S" and board[x][y+1]=="S":
+            return True            
+        else:
+            print("position the ship in a straight line")
+            return False
+    elif y == len_board :
+        if board[x-len_ship_to_place][y]=="S"  and board[x-1][y]=="S":
+            return True
+        elif board[x+len_ship_to_place][y]=="S" and board[x+1][y]=="S":
+            return True
+        elif board[x][y-len_ship_to_place]=="S" and board[x][y-1]=="S":
+            return True
+        else:
+            print("position the ship in a straight line")
+            return False
+    else:
+        if loop_counter == 1 :
+            return True         
+        elif board[x-len_ship_to_place][y]=="S" and board[x-1][y]=="S" :
+            return True
+        elif board[x+len_ship_to_place][y]=="S" and board[x+1][y]=="S" :
+            return True
+        elif board[x][y-len_ship_to_place]=="S" and  board[x][y-1]=="S":
+            return True
+        elif board[x][y+len_ship_to_place]=="S" and board[x][y+1]=="S":
             return True
         else:
             print("position the ship in a straight line")
