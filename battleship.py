@@ -2,8 +2,7 @@ import Output
 import os
 import string
 from enums import Players, Modes
-from colorama import Fore, Style
-
+#TODO Input in another file, printint current size of ship
 
 # INPUT
 def convert_input_to_coordinates(user_input):
@@ -24,12 +23,14 @@ def get_move(board, is_setting_ships=True):
 
     user_input = input("Provide coordinates (e.g. A1): ").upper()
     if is_setting_ships:
-        while user_input[0] not in col_headers or \
+        while len(user_input) < 2 or\
+                user_input[0] not in col_headers or \
                 user_input[1] not in row_headers or \
                 not is_empty_field(board, user_input):
             user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1): ").upper()
     else:
-        while user_input[0] not in col_headers or \
+        while len(user_input) < 2 or\
+                user_input[0] not in col_headers or \
                 user_input[1] not in row_headers:
             user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1): ").upper()
     return convert_input_to_coordinates(user_input)
@@ -176,7 +177,7 @@ def main_menu(mode):
     if user_input == '1':
         game(mode)
     elif user_input == '2':
-        Output.display_mode_menu()
+        Output.display_mode_menu(mode)
         mode_menu(mode)
     elif user_input == '3':
         print()
@@ -185,7 +186,7 @@ def main_menu(mode):
 
 
 def mode_menu(mode):
-    Output.display_mode_menu()
+    Output.display_mode_menu(mode)
     user_input = input("Your pick: ").lower()
     choices = ['1', '2', 'back']
     while user_input not in choices:
@@ -234,7 +235,7 @@ def mark_move(row, col, visible_board, hidden_board):
     if hidden_board[row][col] == "0":
         visible_board[row][col] = "V"
     elif hidden_board[row][col] == "X":
-        visible_board[row][col] = "S" + Style.RESET_ALL
+        visible_board[row][col] = "S"
     return hidden_board
 
 
@@ -274,18 +275,15 @@ def game(mode):
 
     current_player = list(hidden_boards.keys())[0]
     opponent = list(hidden_boards.keys())[1]
-    ship_amount = get_ships_amount(board_p1)
-    while not all_ship_sunk(opponent, hidden_boards, visible_boards):
-        os.system("cls || clear")
-        Output.display_ship()
-        Output.display_two_boards(board_p1_hidden_ships, board_p2_hidden_ships, players)
-        print(f"{current_player} turn")
+    while not all_ship_sunk(current_player, hidden_boards, visible_boards):
+        Output.display_playground(board_p1_hidden_ships, board_p2_hidden_ships, players, current_player)
         row, col = get_move(hidden_boards[opponent], is_setting_ships=False)
         mark_move(row, col, visible_boards[opponent], hidden_boards[opponent])
 
         current_player, opponent = opponent, current_player
 
-    winner = ""
+    Output.display_playground(board_p1_hidden_ships, board_p2_hidden_ships, players, current_player)
+
     if all_ship_sunk(Players.Player1, hidden_boards, visible_boards):
         winner = Players.Player2
     else:
@@ -295,32 +293,6 @@ def game(mode):
     print(f"{winner} won!")
     input("Press enter to come back to main menu...")
     main_menu(mode)
-
-    # # display_board(board_player_1_enemy)
-    # amount_of_hits_player_1 = sum(x.count("\x1b[31mX\x1b[0m") for x in board_player_1_enemy)
-    # amount_of_ships_player_2 = sum(x.count("S") for x in board_player_2)
-    # print(amount_of_hits_player_1, amount_of_ships_player_2)
-    #
-    # # Player 2 Turn
-    # print(f"{Players.Player2} turn", end="\n")
-    # shot_attempt = get_coordinates()
-    # mark_move(shot_attempt[0], shot_attempt[1], board_player_2_enemy, board_player_1)
-    # # display_board(board_player_2_enemy)
-    # amount_of_hits_player_2 = sum(x.count("\x1b[31mX\x1b[0m") for x in board_player_2_enemy)
-    # amount_of_ships_player_1 = sum(x.count("S") for x in board_player_1)
-    # print(amount_of_hits_player_2, amount_of_ships_player_1)
-    # check_empty_spaces_player_1 = sum(x.count("0") for x in board_player_2_enemy)
-    # check_empty_spaces_player_2 = sum(x.count("0") for x in board_player_1_enemy)
-
-    # if amount_of_hits_player_1 == amount_of_ships_player_2:
-    #     print("Player 1 has won!")
-    #     has_won = True
-    # elif amount_of_hits_player_2 == amount_of_ships_player_1:
-    #     print("Player 2 has won!")
-    #     has_won = True
-    # elif check_empty_spaces_player_1 == 0 or check_empty_spaces_player_2 == 0:
-    #     print("It's a tie")
-    #     has_won = True
 
 
 if __name__ == "__main__":

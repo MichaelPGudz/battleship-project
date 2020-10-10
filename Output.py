@@ -112,3 +112,11 @@ def display_set_ships_playground(board, current_player):
     print("\nSet your ships!\n")
     display_board(board)
     print(f"\nCurrent player: {str(current_player).split('.')[1]}")
+
+
+def display_playground(board1, board2, players, current_player):
+    os.system("cls || clear")
+    display_ship()
+    print()
+    display_two_boards(board1, board2, players)
+    print(f"\n{str(current_player).split('.')[1]} turn")
