@@ -27,11 +27,11 @@ def get_move(board, is_setting_ships=True):
         while user_input[0] not in col_headers or \
                 user_input[1] not in row_headers or \
                 not is_empty_field(board, user_input):
-            user_input = input("Please try again. Provide coordinates (e.g. A1): ").upper()
+            user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1): ").upper()
     else:
         while user_input[0] not in col_headers or \
                 user_input[1] not in row_headers:
-            user_input = input("Please try again. Provide coordinates (e.g. A1): ").upper()
+            user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1): ").upper()
     return convert_input_to_coordinates(user_input)
 
 
@@ -43,36 +43,6 @@ def get_board_size():
     return int(board_size)
 
 
-def get_coordinates(ship_size=None, board_size=5):
-    assignment_bool = True
-    while assignment_bool:
-        move_input = input(f"Provide coordinates in indicated order "
-                           f"\"row\" \"col\" (ship size: {ship_size}): ").upper()
-        list_of_letter = list(map(chr, list(range(65, (board_size + 65)))))
-        list_of_number = list(map(str, list(range(1, (board_size + 1)))))
-        if move_input[0] not in list_of_letter or move_input[1] not in list_of_number:
-            print("Provide correct coordinates!")
-        else:
-            row = translate_row(move_input[0], list_of_letter, list_of_number)
-            col = int(move_input[1:]) - 1
-            assignment_bool = False
-    return row, col
-
-
-def translate_row(row, list_of_letter, list_of_number):
-    list_len = len(list_of_number)
-    list_of_number.insert(0, "0")
-    list_of_number.remove(str(list_len))
-    row_translator = {}
-    for key in list_of_letter:
-        for value in list_of_number:
-            row_translator[key] = value
-            list_of_number.remove(value)
-            break
-    coordinate_x = row_translator[row]
-    return int(coordinate_x)
-
-
 def is_empty_field(board, user_input):
     row, col = convert_input_to_coordinates(user_input)
     if board[row][col] == '0':
@@ -80,33 +50,16 @@ def is_empty_field(board, user_input):
     return False
 
 
-def place_ship(board, ship_len=1):
+def place_ship(board, current_player, ship_len=1):
     part_of_ship = 0
     while ship_len > part_of_ship:
-        os.system("cls || clear")
-        Output.display_board(board)
-        row, col = get_coordinates()
+        Output.display_set_ships_playground(board, current_player)
+        row, col = get_move(board)
         part_of_ship += 1
         while not is_next(board, row, col, part_of_ship):
-            row, col = get_coordinates()
-        board[row][col] = 'S'
+            row, col = get_move(board)
+        board[row][col] = 'X'
     return board
-
-
-def is_part_of_ship(board, row, col, part_of_ship):
-    ship_mark = 'X'
-    if part_of_ship == 1:
-        return True
-
-    if board[row - part_of_ship][col] == ship_mark and board[row - 1][col] == ship_mark:
-        return True
-    elif board[x + len_ship_to_place][y] == "S" and board[x + 1][y] == "S":
-        return True
-    elif board[x][y - len_ship_to_place] == "S" and board[x][y - 1] == "S":
-        return True
-    elif board[x][y + len_ship_to_place] == "S" and board[x][y + 1] == "S":
-        return True
-    return False
 
 
 def is_next(board, x, y, part_of_ship):
@@ -259,10 +212,12 @@ def init_board(size=5):
     return board
 
 
-def player_input_ships(board, amount_of_ships=2):
+def player_input_ships(board, current_player, amount_of_ships=2):
+    """Place a specific number of ship."""
     n = 1
     while n <= amount_of_ships:
-        place_ship(board, n)
+        place_ship(board, current_player, n)
+        Output.display_set_ships_playground(board, current_player)
         n += 1
 
 
@@ -270,48 +225,77 @@ def enter_ships(player, board_size=5, ship_amount=2):
     """Function initialize board object for the provided player and asks for the location of the ships on the grid"""
     os.system("cls || clear")
     player_board = init_board(board_size)
-    print("Set your ships!\n")
-    Output.display_board(player_board)
-    print(f"\nCurrent player: {str(player).split('.')[1]}")
-    player_input_ships(player_board, ship_amount)
-    Output.display_board(player_board)
-    print("\n")
+    player_input_ships(player_board, player, ship_amount)
+    input("Press enter to continue...")
     return player_board
 
 
-# wrazie problemów https://pypi.org/project/colorama/  i zmiana wywoływania koloru.
-def mark_move(row, col, board, enemy_board):
-    if enemy_board[row][col] == "0":
-        board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
-        # enemy_board[row][col] = Fore.BLACK + "V" + Style.RESET_ALL
-    elif enemy_board[row][col] == "S":
-        board[row][col] = Fore.RED + "X" + Style.RESET_ALL
-        # enemy_board[row][col] = Fore.BLACK + "X" + Style.RESET_ALL
-    return board
+def mark_move(row, col, visible_board, hidden_board):
+    if hidden_board[row][col] == "0":
+        visible_board[row][col] = "V"
+    elif hidden_board[row][col] == "X":
+        visible_board[row][col] = "S" + Style.RESET_ALL
+    return hidden_board
 
 
-def has_won(player):
+def all_ship_sunk(player, boards_hidden_ship, boards_visible):
     """Return True if player won."""
-    return False
+    i = 0
+    while i < len(boards_hidden_ship[player]):
+        j = 0
+        while j < len(boards_hidden_ship[player]):
+            if boards_hidden_ship[player][i][j] == "X":
+                if boards_visible[player][i][j] != "S":
+                    return False
+            j += 1
+        i += 1
+    return True
+
+
+def get_ships_amount(board):
+    ship_amount = 0
+    for row in board:
+        for field in row:
+            if field == 'X':
+                ship_amount += 1
+    return ship_amount
 
 
 def game(mode):
-    board_player_1 = enter_ships(Players.Player1)
-    board_player_1_enemy = init_board()
-    board_player_2 = enter_ships(Players.Player2)
-    board_player_2_enemy = init_board()
+    board_p1 = enter_ships(Players.Player1)
+    board_p1_hidden_ships = init_board()
+    board_p2 = enter_ships(Players.Player2)
+    board_p2_hidden_ships = init_board()
 
-    players_boards = {Players.Player1: board_player_1, Players.Player2: board_player_2}
-    players = list(players_boards.keys())
-    current_player = list(players_boards.keys())[0]
+    hidden_boards = {Players.Player1: board_p1, Players.Player2: board_p2}
+    visible_boards = {Players.Player1: board_p1_hidden_ships, Players.Player2: board_p2_hidden_ships}
 
-    # while not has_won(current_player):
+    players = list(hidden_boards.keys())
 
-    # Player 1 turn
-    # Output.display_two_boards(board_player_1_enemy, board_player_2_enemy)
-    # print(f"{Players.Player1} turn", end="\n")
-    # shot_attempt = get_coordinates()
-    # mark_move(shot_attempt[0], shot_attempt[1], board_player_1_enemy, board_player_2)
+    current_player = list(hidden_boards.keys())[0]
+    opponent = list(hidden_boards.keys())[1]
+    ship_amount = get_ships_amount(board_p1)
+    while not all_ship_sunk(opponent, hidden_boards, visible_boards):
+        os.system("cls || clear")
+        Output.display_ship()
+        Output.display_two_boards(board_p1_hidden_ships, board_p2_hidden_ships, players)
+        print(f"{current_player} turn")
+        row, col = get_move(hidden_boards[opponent], is_setting_ships=False)
+        mark_move(row, col, visible_boards[opponent], hidden_boards[opponent])
+
+        current_player, opponent = opponent, current_player
+
+    winner = ""
+    if all_ship_sunk(Players.Player1, hidden_boards, visible_boards):
+        winner = Players.Player2
+    else:
+        winner = Players.Player1
+    winner = str(winner).split(".")[1]
+
+    print(f"{winner} won!")
+    input("Press enter to come back to main menu...")
+    main_menu(mode)
+
     # # display_board(board_player_1_enemy)
     # amount_of_hits_player_1 = sum(x.count("\x1b[31mX\x1b[0m") for x in board_player_1_enemy)
     # amount_of_ships_player_2 = sum(x.count("S") for x in board_player_2)

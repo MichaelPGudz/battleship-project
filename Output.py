@@ -104,3 +104,11 @@ def display_board_with_position(board, pos_x=0, pos_y=1):
         row_string += ' ' + ' '.join(row)
         index += 1
         cursor.print_in_position(pos_x, pos_y + index, row_string)
+
+
+def display_set_ships_playground(board, current_player):
+    os.system("cls || clear")
+    display_ship()
+    print("\nSet your ships!\n")
+    display_board(board)
+    print(f"\nCurrent player: {str(current_player).split('.')[1]}")
