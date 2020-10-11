@@ -1,39 +1,7 @@
 import Output
+import input_bt
 import os
-import string
 from enums import Players, Modes
-#TODO Input in another file, printint current size of ship
-
-# INPUT
-def convert_input_to_coordinates(user_input):
-    """Convert input e.g. A1 to indexes of 2 dimension board."""
-    row = user_input[0]
-    col = int(user_input[1:])
-    row = string.ascii_uppercase.index(row)
-    col -= 1
-    return row, col
-
-
-def get_move(board, is_setting_ships=True):
-    """Get move from user e.g. A1, if input is not correct ask again."""
-    board_size = len(board)
-    row_headers = list(map(lambda x: x + 1, list(range(board_size))))
-    row_headers = [str(element) for element in row_headers]
-    col_headers = string.ascii_uppercase[:board_size]
-
-    user_input = input("Provide coordinates (e.g. A1): ").upper()
-    if is_setting_ships:
-        while len(user_input) < 2 or\
-                user_input[0] not in col_headers or \
-                user_input[1] not in row_headers or \
-                not is_empty_field(board, user_input):
-            user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1): ").upper()
-    else:
-        while len(user_input) < 2 or\
-                user_input[0] not in col_headers or \
-                user_input[1] not in row_headers:
-            user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1): ").upper()
-    return convert_input_to_coordinates(user_input)
 
 
 def get_board_size():
@@ -44,26 +12,21 @@ def get_board_size():
     return int(board_size)
 
 
-def is_empty_field(board, user_input):
-    row, col = convert_input_to_coordinates(user_input)
-    if board[row][col] == '0':
-        return True
-    return False
-
-
 def place_ship(board, current_player, ship_len=1):
+    """Place the ship, with ship size."""
     part_of_ship = 0
     while ship_len > part_of_ship:
         Output.display_set_ships_playground(board, current_player)
-        row, col = get_move(board)
+        row, col = input_bt.get_move(board, additional_message=f" (Ship size: {ship_len})")
         part_of_ship += 1
         while not is_next(board, row, col, part_of_ship):
-            row, col = get_move(board)
+            row, col = input_bt.get_move(board, additional_message=f" (Ship size: {ship_len})")
         board[row][col] = 'X'
     return board
 
 
 def is_next(board, x, y, part_of_ship):
+    """Check if next part of ship is close of previous part."""
     len_board = len(board) - 1
     len_ship_to_place = part_of_ship - 1
     communicate = "Place the ship in a straight line!"
@@ -158,16 +121,8 @@ def is_next(board, x, y, part_of_ship):
             return False
 
 
-def get_ai_move():
-    pass
-
-
-def display_select_ship_menu(current_player):
-    print(current_player)
-
-
-# LOGIC
 def main_menu(mode):
+    """Handle the menu."""
     Output.display_menu(mode)
     user_input = input("Your pick: ")
     choices = ['1', '2', '3']
@@ -186,6 +141,7 @@ def main_menu(mode):
 
 
 def mode_menu(mode):
+    """Handle the mode menu."""
     Output.display_mode_menu(mode)
     user_input = input("Your pick: ").lower()
     choices = ['1', '2', 'back']
@@ -203,6 +159,7 @@ def mode_menu(mode):
 
 
 def init_board(size=5):
+    """Create board for playground."""
     board = []
     row = []
     while len(row) < size:
@@ -232,6 +189,7 @@ def enter_ships(player, board_size=5, ship_amount=2):
 
 
 def mark_move(row, col, visible_board, hidden_board):
+    """Provide move in opponent board."""
     if hidden_board[row][col] == "0":
         visible_board[row][col] = "V"
     elif hidden_board[row][col] == "X":
@@ -263,6 +221,7 @@ def get_ships_amount(board):
 
 
 def game(mode):
+    """Game logic. """
     board_p1 = enter_ships(Players.Player1)
     board_p1_hidden_ships = init_board()
     board_p2 = enter_ships(Players.Player2)
@@ -277,7 +236,7 @@ def game(mode):
     opponent = list(hidden_boards.keys())[1]
     while not all_ship_sunk(current_player, hidden_boards, visible_boards):
         Output.display_playground(board_p1_hidden_ships, board_p2_hidden_ships, players, current_player)
-        row, col = get_move(hidden_boards[opponent], is_setting_ships=False)
+        row, col = input_bt.get_move(hidden_boards[opponent], is_setting_ships=False)
         mark_move(row, col, visible_boards[opponent], hidden_boards[opponent])
 
         current_player, opponent = opponent, current_player
