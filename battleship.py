@@ -6,10 +6,11 @@ from enums import Players, Modes
 
 def get_board_size():
     """Function in which player defines the size of the grid. It also checks input to be digit."""
-    board_size = input("Please enter number of columns in the board: \n")
-    while not board_size.isdigit() or int(board_size) < 5 or int(board_size) > 10:
-        board_size = input("Wrong value, please try again!")
-    return int(board_size)
+    os.system("cls || clear1")
+    size = input("Please enter number of columns in the board: \n")
+    while not size.isdigit() or int(size) < 5 or int(size) > 9:
+        size = input("Wrong value, please try again! Provide 5 - 9.")
+    return int(size)
 
 
 def place_ship(board, current_player, ship_len=1):
@@ -121,20 +122,23 @@ def is_next(board, x, y, part_of_ship):
             return False
 
 
-def main_menu(mode):
+def main_menu(mode, board_size=5):
     """Handle the menu."""
-    Output.display_menu(mode)
+    Output.display_menu(mode, board_size)
     user_input = input("Your pick: ")
-    choices = ['1', '2', '3']
+    choices = ['1', '2', '3', '4']
     while user_input not in choices:
         user_input = input('Incorrect value. Your pick: ')
 
     if user_input == '1':
-        game(mode)
+        game(mode, board_size)
     elif user_input == '2':
         Output.display_mode_menu(mode)
         mode_menu(mode)
     elif user_input == '3':
+        board_size = get_board_size()
+        main_menu(mode, board_size)
+    elif user_input == '4':
         print()
         print("Good bye! See you next time.")
         input("Press enter to continue...")
@@ -220,12 +224,12 @@ def get_ships_amount(board):
     return ship_amount
 
 
-def game(mode):
+def game(mode, board_size=5):
     """Game logic. """
-    board_p1 = enter_ships(Players.Player1)
-    board_p1_hidden_ships = init_board()
-    board_p2 = enter_ships(Players.Player2)
-    board_p2_hidden_ships = init_board()
+    board_p1 = enter_ships(Players.Player1, board_size=board_size)
+    board_p1_hidden_ships = init_board(board_size)
+    board_p2 = enter_ships(Players.Player2, board_size=board_size)
+    board_p2_hidden_ships = init_board(board_size)
 
     hidden_boards = {Players.Player1: board_p1, Players.Player2: board_p2}
     visible_boards = {Players.Player1: board_p1_hidden_ships, Players.Player2: board_p2_hidden_ships}
@@ -255,5 +259,6 @@ def game(mode):
 
 
 if __name__ == "__main__":
+    board_size = 5
     current_mode = Modes.HUMAN_HUMAN
-    main_menu(current_mode)
+    main_menu(current_mode, board_size)

@@ -2,7 +2,7 @@ import os, string
 from bs_cursor import Cursor
 
 
-def display_menu(mode):
+def display_menu(mode, board_size=5):
     os.system("cls || clear")
     print()
     display_logo()
@@ -14,7 +14,8 @@ def display_menu(mode):
     print("MENU:\n"
           "1 - Start Game\n"
           "2 - Game Modes\n"
-          "3 - Exit")
+          f"3 - Set board size (current: {board_size})\n"
+          "4 - Exit")
 
 
 def display_mode_menu(mode):

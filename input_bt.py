@@ -4,7 +4,7 @@ import string
 def convert_input_to_coordinates(user_input):
     """Convert input e.g. A1 to indexes of 2 dimension board."""
     row = user_input[0]
-    col = int(user_input[1:])
+    col = int(user_input[1])
     row = string.ascii_uppercase.index(row)
     col -= 1
     return row, col
