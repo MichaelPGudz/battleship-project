@@ -4,6 +4,59 @@ import os
 from enums import Players, Modes
 
 
+def make_edge(board):
+    x = 0
+    for row in board:
+        y = 0
+        for element in row:
+            try:
+                if x-1 == -1:
+                    raise IndexError
+                if element == "S" and board[x-1][y] == "0":
+                    board[x-1][y] = "e"
+            except IndexError:
+                continue
+            y += 1
+        x += 1
+    x = 0
+    for row in board:
+        y = 0
+        for element in row:
+            try:
+                if element == "S" and board[x+1][y] == "0":
+                    board[x+1][y] = "e"
+            except IndexError:
+                continue
+            y += 1
+        x += 1
+    
+    x = 0
+    for row in board:
+        y = 0
+        for element in row:
+            try:
+                if y-1 == -1:
+                    raise IndexError
+                if element == "S" and board[x][y-1] == "0":
+                    board[x][y-1] = "e"
+            except IndexError:
+                continue
+            y += 1
+        x += 1
+    x = 0
+    for row in board:
+        y = 0
+        for element in row:
+            try:
+                if element == "S" and board[x][y+1] == "0":
+                    board[x][y+1] = "e"
+            except IndexError:
+                continue
+            y += 1
+        x += 1
+    return board
+
+
 def get_board_size():
     """Function in which player defines the size of the grid. It also checks input to be digit."""
     os.system("cls || clear1")
