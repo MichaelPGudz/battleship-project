@@ -1,4 +1,5 @@
-import os, string
+import os
+import string
 from bs_cursor import Cursor
 
 
