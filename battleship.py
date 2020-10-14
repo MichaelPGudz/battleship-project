@@ -300,10 +300,11 @@ def game(mode, board_size=5):
     opponent = list(hidden_boards.keys())[1]
 
     fields_checked = []
+    ships_hit = set()
     while not all_ship_sunk(current_player, hidden_boards, visible_boards):
         Output.display_playground(board_p1_hidden_ships, board_p2_hidden_ships, players, current_player)
         if current_player == Players.AI:
-            row, col = input_bt.ai_shoot(hidden_boards[opponent], fields_checked)
+            row, col = input_bt.ai_shoot(hidden_boards[opponent], fields_checked, ships_hit)
         else:
             row, col = input_bt.get_move(hidden_boards[opponent], is_setting_ships=False)
         mark_move(row, col, visible_boards[opponent], hidden_boards[opponent])
