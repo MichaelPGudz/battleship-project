@@ -281,19 +281,31 @@ def game(mode, board_size=5):
     """Game logic. """
     board_p1 = enter_ships(Players.Player1, board_size=board_size)
     board_p1_hidden_ships = init_board(board_size)
-    board_p2 = enter_ships(Players.Player2, board_size=board_size)
-    board_p2_hidden_ships = init_board(board_size)
+    if mode == Modes.HUMAN_HUMAN:
+        board_p2 = enter_ships(Players.Player2, board_size=board_size)
+        board_p2_hidden_ships = init_board(board_size)
 
-    hidden_boards = {Players.Player1: board_p1, Players.Player2: board_p2}
-    visible_boards = {Players.Player1: board_p1_hidden_ships, Players.Player2: board_p2_hidden_ships}
+        hidden_boards = {Players.Player1: board_p1, Players.Player2: board_p2}
+        visible_boards = {Players.Player1: board_p1_hidden_ships, Players.Player2: board_p2_hidden_ships}
+    else:
+        board_p2 = input_bt.get_ai_move(Players.AI, board_size=board_size)
+        board_p2_hidden_ships = init_board(board_size)
+
+        hidden_boards = {Players.Player1: board_p1, Players.AI: board_p2}
+        visible_boards = {Players.Player1: board_p1_hidden_ships, Players.AI: board_p2_hidden_ships}
 
     players = list(hidden_boards.keys())
 
     current_player = list(hidden_boards.keys())[0]
     opponent = list(hidden_boards.keys())[1]
+
+    fields_checked = []
     while not all_ship_sunk(current_player, hidden_boards, visible_boards):
         Output.display_playground(board_p1_hidden_ships, board_p2_hidden_ships, players, current_player)
-        row, col = input_bt.get_move(hidden_boards[opponent], is_setting_ships=False)
+        if current_player == Players.AI:
+            row, col = input_bt.ai_shoot(hidden_boards[opponent], fields_checked)
+        else:
+            row, col = input_bt.get_move(hidden_boards[opponent], is_setting_ships=False)
         mark_move(row, col, visible_boards[opponent], hidden_boards[opponent])
 
         current_player, opponent = opponent, current_player
@@ -301,7 +313,7 @@ def game(mode, board_size=5):
     Output.display_playground(board_p1_hidden_ships, board_p2_hidden_ships, players, current_player)
 
     if all_ship_sunk(Players.Player1, hidden_boards, visible_boards):
-        winner = Players.Player2
+        winner = Players.Player2 if mode == Modes.HUMAN_HUMAN else Players.AI
     else:
         winner = Players.Player1
     winner = str(winner).split(".")[1]

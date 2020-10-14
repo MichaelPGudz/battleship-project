@@ -1,4 +1,5 @@
 import string
+import random
 
 
 def convert_input_to_coordinates(user_input):
@@ -32,7 +33,40 @@ def get_move(board, is_setting_ships=True, additional_message=""):
     return convert_input_to_coordinates(user_input)
 
 
-def get_ai_move():
+def ai_shoot(board, fields_checked):
+    """Gets move from AI."""
+    board_size = len(board)
+    row_headers = list(map(lambda x: x + 1, list(range(board_size))))
+    row_headers = [str(element) for element in row_headers]
+    col_headers = string.ascii_uppercase[:board_size]
+    board_fields = {"columns": col_headers, "rows": row_headers}
+    try:
+        x, y = convert_input_to_coordinates(fields_checked[-1])
+        if board[x][y] == 'H':
+            col_guess = x + 1 or x - 1
+            print(col_guess)
+            row_guess = random.choice(fields_checked[-1]-1, fields_checked[-1]+1)
+            field_guess = col_guess + str(row_guess)
+    except IndexError:
+        pass
+    # for row in board:
+    #     for spot in row:
+    #         if spot == 'H':
+    #             pass
+    col_guess = random.choice(board_fields["columns"])
+    row_guess = random.choice(board_fields["rows"])
+    field_guess = col_guess + str(row_guess)
+    while field_guess in fields_checked:
+        print("Already in! Let's try again!")
+        col_guess = random.choice(board_fields["columns"])
+        row_guess = random.choice(board_fields["rows"])
+        field_guess = col_guess + str(row_guess)
+
+    fields_checked.append(field_guess)
+    print(fields_checked)
+
+
+def get_ai_move(player, board_size=5, ship_size=2):
     pass
 
 
