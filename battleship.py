@@ -49,6 +49,8 @@ def ai_place_ship(board, ship_len=1):
                     else:
                         loop_counter -=1 
                 elif case == 2:
+                    if row-1== -1:
+                        raise IndexError
                     if board[row-1][col]=="0":
                         board[row-1][col]= "X" 
                     else:
@@ -59,6 +61,8 @@ def ai_place_ship(board, ship_len=1):
                     else:
                         loop_counter -=1    
                 elif case == 4:
+                    if col-1 == -1:
+                        raise IndexError
                     if board[row][col-1]=="0":
                         board[row][col-1]= "X"
                     else:
