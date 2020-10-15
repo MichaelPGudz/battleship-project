@@ -7,72 +7,6 @@ from colorama import *
 from enums import Players, Modes
 
 
-def ai_get_first_coordinate(size=5):
-    
-    list_of_number_row = list(map(str,list(range(size))))
-    list_of_number_col = list(map(str,list(range(size))))
-  
-    
-
-    row = random.choice(list_of_number_row)
-    col = random.choice(list_of_number_col)
-
-
-    return int(row), int(col)
-
-def ai_place_ship(board, ship_len=1):
-    assignment_bool = True
-    loop_counter = 1
-    len_board = len(board)
-    
-    if ship_len == 1 :
-        while assignment_bool :
-            row,col = ai_get_first_coordinate(size=len_board)
-            if board[row][col]=="0":
-                board[row][col]= "X"
-                assignment_bool= False   
-    elif ship_len ==2:
-        while assignment_bool :
-            row,col = ai_get_first_coordinate(size=len_board)
-            if board[row][col]=="0":
-                board[row][col]= "X"
-                assignment_bool= False            
-        while 1 >= loop_counter:
-            
-            try:
-                loop_counter+=1
-                list_of_case = [1,2,3,4]
-                case = random.choice(list_of_case)
-                if case == 1:
-                    if board[row+1][col]=="0":
-                        board[row+1][col]= "X"
-                    else:
-                        loop_counter -=1 
-                elif case == 2:
-                    if row-1== -1:
-                        raise IndexError
-                    if board[row-1][col]=="0":
-                        board[row-1][col]= "X" 
-                    else:
-                        loop_counter -=1
-                elif case == 3:
-                    if board[row][col+1]=="0":
-                        board[row][col+1]= "X" 
-                    else:
-                        loop_counter -=1    
-                elif case == 4:
-                    if col-1 == -1:
-                        raise IndexError
-                    if board[row][col-1]=="0":
-                        board[row][col-1]= "X"
-                    else:
-                        loop_counter -=1  
-            except IndexError:
-                loop_counter-=1
-        # elif ship_len>2:
-           
-    return board
-
 def make_edges(board):
     temp_board = board
     x = 0
@@ -367,7 +301,7 @@ def game(mode, board_size=5):
         hidden_boards = {Players.Player1: board_p1, Players.Player2: board_p2}
         visible_boards = {Players.Player1: board_p1_hidden_ships, Players.Player2: board_p2_hidden_ships}
     else:
-        board_p2 = input_bt.get_ai_move(Players.AI, board_size=board_size)
+        board_p2 = input_bt.get_ai_board(board_size)
 
         hidden_boards = {Players.Player1: board_p1, Players.AI: board_p2}
         visible_boards = {Players.Player1: board_p1_hidden_ships, Players.AI: board_p2_hidden_ships}
