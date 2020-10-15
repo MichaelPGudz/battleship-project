@@ -1,60 +1,45 @@
 import Output
 import input_bt
 import os
+import winsound
+from colorama import *
 from enums import Players, Modes
 
 
-def make_edge(board):
+def make_edges(board):
+    temp_board = board
     x = 0
-    for row in board:
+    for row in temp_board:
         y = 0
         for element in row:
-            try:
-                if x-1 == -1:
-                    raise IndexError
-                if element == "S" and board[x-1][y] == "0":
-                    board[x-1][y] = "e"
-            except IndexError:
-                continue
+            if element == 'X':
+                try:
+                    if x - 1 == -1:
+                        raise IndexError
+                    if temp_board[x - 1][y] == "0":
+                        temp_board[x - 1][y] = "E"
+                except IndexError:
+                    pass
+                try:
+                    if temp_board[x + 1][y] == "0":
+                        temp_board[x + 1][y] = "E"
+                except IndexError:
+                    pass
+                try:
+                    if y - 1 == -1:
+                        raise IndexError
+                    if temp_board[x][y - 1] == "0":
+                        temp_board[x][y - 1] = "E"
+                except IndexError:
+                    pass
+                try:
+                    if temp_board[x][y + 1] == "0":
+                        temp_board[x][y + 1] = "E"
+                except IndexError:
+                    pass
             y += 1
         x += 1
-    x = 0
-    for row in board:
-        y = 0
-        for element in row:
-            try:
-                if element == "S" and board[x+1][y] == "0":
-                    board[x+1][y] = "e"
-            except IndexError:
-                continue
-            y += 1
-        x += 1
-    
-    x = 0
-    for row in board:
-        y = 0
-        for element in row:
-            try:
-                if y-1 == -1:
-                    raise IndexError
-                if element == "S" and board[x][y-1] == "0":
-                    board[x][y-1] = "e"
-            except IndexError:
-                continue
-            y += 1
-        x += 1
-    x = 0
-    for row in board:
-        y = 0
-        for element in row:
-            try:
-                if element == "S" and board[x][y+1] == "0":
-                    board[x][y+1] = "e"
-            except IndexError:
-                continue
-            y += 1
-        x += 1
-    return board
+    return temp_board
 
 
 def get_board_size():
@@ -62,7 +47,7 @@ def get_board_size():
     os.system("cls || clear1")
     size = input("Please enter number of columns in the board: \n")
     while not size.isdigit() or int(size) < 5 or int(size) > 9:
-        size = input("Wrong value, please try again! Provide 5 - 9.")
+        size = input("Wrong value, please try again! Provide 5 - 9: ")
     return int(size)
 
 
@@ -79,12 +64,15 @@ def place_ship(board, current_player, ship_len=1):
     return board
 
 
-def is_next(board, x, y, part_of_ship):
+def is_next(board, x, y, part_of_ship, another_mart_to_check=''):
     """Check if next part of ship is close of previous part."""
     len_board = len(board) - 1
     len_ship_to_place = part_of_ship - 1
     communicate = "Place the ship in a straight line!"
-    ship_mark = "X"
+    if another_mart_to_check != '':
+        ship_mark = another_mart_to_check
+    else:
+        ship_mark = "X"
     if part_of_ship == 1:
         return True
     elif x == 0 and y == 0:
@@ -179,9 +167,11 @@ def main_menu(mode, board_size=5):
     """Handle the menu."""
     Output.display_menu(mode, board_size)
     user_input = input("Your pick: ")
+    winsound.Beep(500, 200)
     choices = ['1', '2', '3', '4']
     while user_input not in choices:
         user_input = input('Incorrect value. Your pick: ')
+        winsound.Beep(500, 200)
 
     if user_input == '1':
         game(mode, board_size)
@@ -201,9 +191,11 @@ def mode_menu(mode):
     """Handle the mode menu."""
     Output.display_mode_menu(mode)
     user_input = input("Your pick: ").lower()
+    winsound.Beep(500, 200)
     choices = ['1', '2', 'back']
     while user_input not in choices:
         user_input = input('Incorrect value. Your pick: ').lower()
+        winsound.Beep(500, 200)
     if user_input == '1':
         mode = Modes.HUMAN_HUMAN
         main_menu(mode)
@@ -230,32 +222,50 @@ def init_board(size=5):
 def player_input_ships(board, current_player, amount_of_ships=2):
     """Place a specific number of ship."""
     n = 1
+    temp_board = board
     while n <= amount_of_ships:
-        place_ship(board, current_player, n)
-        Output.display_set_ships_playground(board, current_player)
+        temp_board = place_ship(board, current_player, n)
+        make_edges(temp_board)
+        Output.display_set_ships_playground(temp_board, current_player)
         n += 1
+    return temp_board
 
 
 def enter_ships(player, board_size=5, ship_amount=2):
     """Function initialize board object for the provided player and asks for the location of the ships on the grid"""
     os.system("cls || clear")
     player_board = init_board(board_size)
-    player_input_ships(player_board, player, ship_amount)
+    player_board = player_input_ships(player_board, player, ship_amount)
     input("Press enter to continue...")
+    winsound.Beep(500, 200)
     return player_board
 
 
 def mark_move(row, col, visible_board, hidden_board):
     """Provide move in opponent board."""
-    if hidden_board[row][col] == "0":
-        visible_board[row][col] = "V"
+    if hidden_board[row][col] == "0" or hidden_board[row][col] == 'E':
+        visible_board[row][col] = "M"
+    elif hidden_board[row][col] == 'X' and \
+            is_next(hidden_board, row, col, 2) and \
+            not is_next(visible_board, row, col, 2, 'H'):
+        visible_board[row][col] = 'H'
     elif hidden_board[row][col] == "X":
         visible_board[row][col] = "S"
+
+    i = 0
+    while i < len(visible_board):
+        j = 0
+        while j < len(visible_board):
+            if visible_board[i][j] == 'H' and is_next(visible_board, i, j, 2, 'S'):
+                visible_board[i][j] = 'S'
+            j += 1
+        i += 1
+
     return hidden_board
 
 
 def all_ship_sunk(player, boards_hidden_ship, boards_visible):
-    """Return True if player won."""
+    """Return True if ships are stunk."""
     i = 0
     while i < len(boards_hidden_ship[player]):
         j = 0
@@ -280,16 +290,17 @@ def get_ships_amount(board):
 def game(mode, board_size=5):
     """Game logic. """
     board_p1 = enter_ships(Players.Player1, board_size=board_size)
+
     board_p1_hidden_ships = init_board(board_size)
+    board_p2_hidden_ships = init_board(board_size)
+
     if mode == Modes.HUMAN_HUMAN:
         board_p2 = enter_ships(Players.Player2, board_size=board_size)
-        board_p2_hidden_ships = init_board(board_size)
 
         hidden_boards = {Players.Player1: board_p1, Players.Player2: board_p2}
         visible_boards = {Players.Player1: board_p1_hidden_ships, Players.Player2: board_p2_hidden_ships}
     else:
         board_p2 = input_bt.get_ai_move(Players.AI, board_size=board_size)
-        board_p2_hidden_ships = init_board(board_size)
 
         hidden_boards = {Players.Player1: board_p1, Players.AI: board_p2}
         visible_boards = {Players.Player1: board_p1_hidden_ships, Players.AI: board_p2_hidden_ships}
@@ -319,8 +330,10 @@ def game(mode, board_size=5):
         winner = Players.Player1
     winner = str(winner).split(".")[1]
 
-    print(f"{winner} won!")
+    print(Fore.GREEN + f"\n{winner} won!" + Fore.RESET)
+    winsound.Beep(1000, 500)
     input("Press enter to come back to main menu...")
+    winsound.Beep(500, 200)
     main_menu(mode)
 
 

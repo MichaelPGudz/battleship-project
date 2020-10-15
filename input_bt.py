@@ -1,6 +1,7 @@
 import string
 import time
 import random
+import winsound
 
 
 def convert_input_to_coordinates(user_input):
@@ -19,18 +20,21 @@ def get_move(board, is_setting_ships=True, additional_message=""):
     row_headers = [str(element) for element in row_headers]
     col_headers = string.ascii_uppercase[:board_size]
 
-    user_input = input(F"Provide coordinates (e.g. A1){additional_message}: ").upper()
+    user_input = input(f"Provide coordinates (e.g. A1){additional_message}: ").upper()
+    winsound.Beep(500, 200)
     if is_setting_ships:
         while len(user_input) < 2 or\
                 user_input[0] not in col_headers or \
                 user_input[1] not in row_headers or \
                 not is_empty_field(board, user_input):
-            user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1){additional_message}: ").upper()
+            user_input = input(f"Incorrect coordinates. Provide coordinates (e.g. A1){additional_message}: ").upper()
+            winsound.Beep(500, 200)
     else:
         while len(user_input) < 2 or\
                 user_input[0] not in col_headers or \
                 user_input[1] not in row_headers:
-            user_input = input("Incorrect coordinates. Provide coordinates (e.g. A1){additional_message}: ").upper()
+            user_input = input(f"Incorrect coordinates. Provide coordinates (e.g. A1){additional_message}: ").upper()
+            winsound.Beep(500, 200)
     return convert_input_to_coordinates(user_input)
 
 
@@ -71,6 +75,7 @@ def ai_shoot(board, fields_checked, ships_hit):
     print(fields_checked)
     time.sleep(1.0)
     return convert_input_to_coordinates(field_guess)
+
 
 def get_ai_move(player, board_size=5, ship_size=2):
     pass
