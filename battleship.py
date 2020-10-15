@@ -38,30 +38,34 @@ def ai_place_ship(board, ship_len=1):
                 board[row][col]= "X"
                 assignment_bool= False            
         while 1 >= loop_counter:
-            loop_counter+=1
-            list_of_case = [1,2,3,4]
-            case = random.choice(list_of_case)
-            if case == 1:
-                if board[row+1][col]=="0":
-                    board[row+1][col]= "X"
-                else:
-                    loop_counter -=1 
-            elif case == 2:
-                if board[row-1][col]=="0":
-                    board[row-1][col]= "X" 
-                else:
-                    loop_counter -=1
-            elif case == 3:
-                if board[row][col+1]=="0":
-                    board[row][col+1]= "X" 
-                else:
-                    loop_counter -=1    
-            elif case == 4:
-                if board[row][col-1]=="0":
-                    board[row][col-1]= "X"
-                else:
-                    loop_counter -=1  
-    # elif ship_len>2:
+            
+            try:
+                loop_counter+=1
+                list_of_case = [1,2,3,4]
+                case = random.choice(list_of_case)
+                if case == 1:
+                    if board[row+1][col]=="0":
+                        board[row+1][col]= "X"
+                    else:
+                        loop_counter -=1 
+                elif case == 2:
+                    if board[row-1][col]=="0":
+                        board[row-1][col]= "X" 
+                    else:
+                        loop_counter -=1
+                elif case == 3:
+                    if board[row][col+1]=="0":
+                        board[row][col+1]= "X" 
+                    else:
+                        loop_counter -=1    
+                elif case == 4:
+                    if board[row][col-1]=="0":
+                        board[row][col-1]= "X"
+                    else:
+                        loop_counter -=1  
+            except IndexError:
+                loop_counter-=1
+        # elif ship_len>2:
            
     return board
 
