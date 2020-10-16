@@ -190,7 +190,7 @@ def is_next(board, x, y, part_of_ship, another_mart_to_check=''):
             return False
 
 
-def main_menu(mode, board_size=5):
+def main_menu(mode, board_size):
     """Handle the menu."""
     Output.display_menu(mode, board_size)
     user_input = input("Your pick: ")
@@ -204,7 +204,7 @@ def main_menu(mode, board_size=5):
         game(mode, board_size)
     elif user_input == '2':
         Output.display_mode_menu(mode)
-        mode_menu(mode)
+        mode_menu(mode, board_size)
     elif user_input == '3':
         board_size = get_board_size()
         main_menu(mode, board_size)
@@ -214,7 +214,7 @@ def main_menu(mode, board_size=5):
         input("Press enter to continue...")
 
 
-def mode_menu(mode):
+def mode_menu(mode, board_size):
     """Handle the mode menu."""
     Output.display_mode_menu(mode)
     user_input = input("Your pick: ").lower()
@@ -225,13 +225,13 @@ def mode_menu(mode):
         winsound.Beep(500, 200)
     if user_input == '1':
         mode = Modes.HUMAN_HUMAN
-        main_menu(mode)
+        main_menu(mode, board_size)
     elif user_input == '2':
         mode = Modes.HUMAN_AI
-        main_menu(mode)
+        main_menu(mode, board_size)
     elif user_input == 'back':
-        Output.display_menu(mode)
-        main_menu(mode)
+        Output.display_menu(mode, board_size)
+        main_menu(mode, board_size)
 
 
 def init_board(size=5):
@@ -314,7 +314,7 @@ def get_ships_amount(board):
     return ship_amount
 
 
-def game(mode, board_size=5):
+def game(mode, board_size):
     """Game logic. """
     board_p1 = enter_ships(Players.Player1, board_size=board_size)
 
@@ -361,7 +361,7 @@ def game(mode, board_size=5):
     winsound.Beep(1000, 500)
     input("Press enter to come back to main menu...")
     winsound.Beep(500, 200)
-    main_menu(mode)
+    main_menu(mode, board_size)
 
 
 if __name__ == "__main__":
