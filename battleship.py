@@ -2,12 +2,12 @@ import Output
 import input_bt
 import os
 import winsound
-import random
 from colorama import *
 from enums import Players, Modes
 
 
 def make_edges(board):
+    """Add safe area around ships, to protect against placing ships too close."""
     temp_board = board
     x = 0
     for row in temp_board:
@@ -36,6 +36,32 @@ def make_edges(board):
                 try:
                     if temp_board[x][y + 1] == "0":
                         temp_board[x][y + 1] = "E"
+                except IndexError:
+                    pass
+                try:
+                    if x - 1 == -1 or y - 1 == -1:
+                        raise IndexError
+                    if temp_board[x - 1][y - 1] == "0":
+                        temp_board[x - 1][y - 1] = "E"
+                except IndexError:
+                    pass
+                try:
+                    if x - 1 == -1:
+                        raise IndexError
+                    if temp_board[x - 1][y + 1] == "0":
+                        temp_board[x - 1][y + 1] = "E"
+                except IndexError:
+                    pass
+                try:
+                    if temp_board[x + 1][y + 1] == "0":
+                        temp_board[x + 1][y + 1] = "E"
+                except IndexError:
+                    pass
+                try:
+                    if y - 1 == -1:
+                        raise IndexError
+                    if temp_board[x + 1][y - 1] == "0":
+                        temp_board[x + 1][y - 1] = "E"
                 except IndexError:
                     pass
             y += 1

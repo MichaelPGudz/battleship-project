@@ -75,6 +75,7 @@ def ai_shoot(board, fields_checked, ships_hit):
     fields_checked.append(field_guess)
     print(fields_checked)
     time.sleep(1.0)
+    winsound.Beep(500, 200)
     return convert_input_to_coordinates(field_guess)
 
 
