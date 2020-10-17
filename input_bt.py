@@ -39,44 +39,70 @@ def get_move(board, is_setting_ships=True, additional_message=""):
     return convert_input_to_coordinates(user_input)
 
 
-def ai_shoot(board, fields_checked, ships_hit):
+def ai_shoot(visible_board):
     """Gets move from AI."""
-    board_size = len(board)
-    row_headers = list(map(lambda x: x + 1, list(range(board_size))))
-    row_headers = [str(element) for element in row_headers]
+    board_size = len(visible_board)
+    row_headers = list(map(lambda x: str(x + 1), list(range(board_size))))
     col_headers = string.ascii_uppercase[:board_size]
     board_fields = {"columns": col_headers, "rows": row_headers}
-    # try:
-    #     x, y = convert_input_to_coordinates(fields_checked[-1])
-    #     if board[x][y] == 'S':
-    #         ships_hit.add(fields_checked[-1])
-    #         try:
-    #             col_guess = string.ascii_uppercase[y + random.randint(-1, 1)]
-    #             row_guess = x + random.randint(-1, 1)
-    #             field_guess = col_guess + str(row_guess)
-    #             while field_guess in fields_checked:
-    #                 print("Already in! Let's try again!")
-    #                 col_guess = string.ascii_uppercase[y + random.randint(-1, 1)]
-    #                 row_guess = x + random.randint(-1, 1)
-    #                 field_guess = col_guess + str(row_guess)
-    #         except ValueError:
-    #             pass
-    # except IndexError:
-    #     pass
-    col_guess = random.choice(board_fields["columns"])
-    row_guess = random.choice(board_fields["rows"])
-    field_guess = col_guess + str(row_guess)
-    while field_guess in fields_checked:
-        print("Already in! Let's try again!")
+
+    is_part_of_ship = False
+    h_x = -1
+    h_y = -1
+    i = 0
+    while i < board_size:
+        j = 0
+        while j < board_size:
+            if visible_board[i][j] == 'H':
+                is_part_of_ship = True
+                h_x = i
+                h_y = j
+                break
+            j += 1
+        if is_part_of_ship:
+            break
+        i += 1
+
+    if not is_part_of_ship:
         col_guess = random.choice(board_fields["columns"])
         row_guess = random.choice(board_fields["rows"])
         field_guess = col_guess + str(row_guess)
+        result = convert_input_to_coordinates(field_guess)
+        while visible_board[result[0]][result[1]] != '0':
+            print("Already in! Let's try again!")
+            col_guess = random.choice(board_fields["columns"])
+            row_guess = random.choice(board_fields["rows"])
+            field_guess = col_guess + str(row_guess)
+            result = convert_input_to_coordinates(field_guess)
+    else:
+        try:
+            if h_x - 1 == -1:
+                raise IndexError
+            if visible_board[h_x - 1][h_y] == '0':
+                result = (h_x - 1, h_y)
+        except IndexError:
+            pass
+        try:
+            if visible_board[h_x + 1][h_y] == '0':
+                result = (h_x + 1, h_y)
+        except IndexError:
+            pass
+        try:
+            if h_y == -1:
+                raise IndexError
+            if visible_board[h_x][h_y - 1] == '0':
+                result = (h_x, h_y - 1)
+        except IndexError:
+            pass
+        try:
+            if visible_board[h_x][h_y + 1] == '0':
+                result = (h_x, h_y + 1)
+        except IndexError:
+            pass
 
-    fields_checked.append(field_guess)
-    print(fields_checked)
     time.sleep(1.0)
     winsound.Beep(500, 200)
-    return convert_input_to_coordinates(field_guess)
+    return result
 
 
 def get_ai_board(size):
